@@ -1,13 +1,11 @@
 package com.rove.triplogger.service;
 
-import com.rove.triplogger.dto.*;
 import com.rove.triplogger.entity.Trip;
 import com.rove.triplogger.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

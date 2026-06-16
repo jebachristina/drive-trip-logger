@@ -7,68 +7,82 @@ import TripForm from "../components/TripForm";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 
 export default function Home() {
-const [trips, setTrips] = useState<any[]>([]);
-const [selectedTrip, setSelectedTrip] = useState<any>(null);
-const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [trips, setTrips] = useState<any[]>([]);
+  const [selectedTrip, setSelectedTrip] = useState<any>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
-const [showMemorableOnly, setShowMemorableOnly] =
-useState(false);
+  const [showMemorableOnly, setShowMemorableOnly] =
+    useState(false);
 
-const [summary, setSummary] = useState({
-totalTrips: 0,
-totalDistance: 0,
-memorableTrips: 0,
-});
+  const [summary, setSummary] = useState({
+    totalTrips: 0,
+    totalDistance: 0,
+    memorableTrips: 0,
+  });
 
-useEffect(() => {
-fetchTrips();
-fetchSummary();
-}, []);
+  useEffect(() => {
+    fetchTrips();
+    fetchSummary();
+  }, []);
 
-const fetchTrips = async () => {
-const response = await API.get("");
-setTrips(response.data);
-};
+  const fetchTrips = async () => {
+    const response = await API.get("");
+    setTrips(response.data);
+  };
 
-const fetchSummary = async () => {
-const response = await API.get("/summary");
-setSummary(response.data);
-};
+  const fetchSummary = async () => {
+    const response = await API.get("/summary");
+    setSummary(response.data);
+  };
 
-const confirmDelete = async () => {
-if (deleteId === null) return;
-
-
-await API.delete(`/${deleteId}`);
-
-if (
-  selectedTrip &&
-  selectedTrip.id === deleteId
-) {
-  setSelectedTrip(null);
-}
-
-setDeleteId(null);
-
-fetchTrips();
-fetchSummary();
+  const confirmDelete = async () => {
+    if (deleteId === null) return;
 
 
-};
+    await API.delete(`/${deleteId}`);
 
-const filteredTrips = (
-showMemorableOnly
-? trips.filter(
-(trip: any) => trip.memorable
-)
-: trips
-).sort(
-(a: any, b: any) =>
-new Date(b.startTime).getTime() -
-new Date(a.startTime).getTime()
-);
+    if (
+      selectedTrip &&
+      selectedTrip.id === deleteId
+    ) {
+      setSelectedTrip(null);
+    }
 
-return ( <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-50"> <div className="max-w-6xl mx-auto p-8">
+    setDeleteId(null);
+
+    fetchTrips();
+    fetchSummary();
+
+
+  };
+
+  const filteredTrips = (
+    showMemorableOnly
+      ? trips.filter(
+        (trip: any) => trip.memorable
+      )
+      : trips
+  ).sort(
+    (a: any, b: any) =>
+      new Date(b.startTime).getTime() -
+      new Date(a.startTime).getTime()
+  );
+
+  const formatDate = (
+    date: string
+  ) =>
+    new Date(date).toLocaleString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }
+    );
+
+  return (<main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-50"> <div className="max-w-6xl mx-auto p-8">
 
 
     <h1 className="text-4xl font-bold mb-8">
@@ -90,8 +104,7 @@ return ( <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue
       }}
     />
 
-    <div className="bg-white rounded-2xl shadow-lg p-6 mt-8">
-
+    <div className="bg-white border-2 border-black rounded-xl shadow-sm p-6 mt-8">
       <h2 className="font-semibold text-xl">
         Trips
       </h2>
@@ -102,11 +115,10 @@ return ( <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue
           onClick={() =>
             setShowMemorableOnly(false)
           }
-          className={`px-4 py-2 rounded-lg transition ${
-            !showMemorableOnly
+          className={`px-4 py-2 rounded-lg transition ${!showMemorableOnly
               ? "bg-indigo-600 text-white"
               : "bg-gray-100 hover:bg-gray-200"
-          }`}
+            }`}
         >
           All Trips
         </button>
@@ -115,11 +127,10 @@ return ( <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue
           onClick={() =>
             setShowMemorableOnly(true)
           }
-          className={`px-4 py-2 rounded-lg transition ${
-            showMemorableOnly
+          className={`px-4 py-2 rounded-lg transition ${showMemorableOnly
               ? "bg-indigo-600 text-white"
               : "bg-gray-100 hover:bg-gray-200"
-          }`}
+            }`}
         >
           ⭐ Memorable Trips
         </button>
@@ -145,66 +156,76 @@ return ( <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue
         </div>
 
       ) : (
+        <div className="max-h-[450px] overflow-y-auto pr-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredTrips.map(
+              (trip: any) => (
+                <div
+                  key={trip.id}
+                  className="bg-white border-bLUE rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-4"              >
+                  <h3 className="text-lg font-semibold">
+                    {trip.startLocation}
+                    {" → "}
+                    {trip.endLocation}
+                  </h3>
 
-          {filteredTrips.map(
-            (trip: any) => (
-              <div
-                key={trip.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-5 border border-gray-100"
-              >
-                <h3 className="text-lg font-semibold">
-                  {trip.startLocation}
-                  {" → "}
-                  {trip.endLocation}
-                </h3>
-
-                <p className="text-gray-600 mt-2">
-                  Distance: {trip.distance} km
-                </p>
-
-                {trip.notes && (
-                  <p className="text-sm text-gray-500 mt-2 line-clamp-3">
-                    {trip.notes}
+                  <p className="text-gray-600 mt-2">
+                    Distance: {trip.distance} km
                   </p>
-                )}
 
-                {trip.memorable && (
-                  <div className="mt-3 text-yellow-500">
-                    ⭐ Memorable Trip
+                  <p className="text-sm text-gray-500 mt-1">
+                    Start: {formatDate(trip.startTime)}
+                  </p>
+
+                  <p className="text-sm text-gray-500">
+                    End: {formatDate(trip.endTime)}
+                  </p>
+
+                  {trip.notes && (
+                    <p className="text-sm text-gray-500 mt-2 line-clamp-3">
+                      {trip.notes}
+                    </p>
+                  )}
+
+                  {trip.memorable && (
+                    <div className="mt-3 text-yellow-500">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-medium">
+                        ⭐ Memorable
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 mt-5">
+
+                    <button
+                      onClick={() =>
+                        setSelectedTrip(
+                          trip
+                        )
+                      }
+                      className="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        setDeleteId(
+                          trip.id
+                        )
+                      }
+                      className="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
+                    >
+                      Delete
+                    </button>
+
                   </div>
-                )}
-
-                <div className="flex gap-3 mt-5">
-
-                  <button
-                    onClick={() =>
-                      setSelectedTrip(
-                        trip
-                      )
-                    }
-                    className="px-4 py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      setDeleteId(
-                        trip.id
-                      )
-                    }
-                    className="px-4 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition"
-                  >
-                    Delete
-                  </button>
-
                 </div>
-              </div>
-            )
-          )}
+              )
+            )}
 
+          </div>
         </div>
 
       )}
@@ -219,8 +240,8 @@ return ( <main className="min-h-screen bg-gradient-to-br from-slate-100 via-blue
     />
 
   </div>
-</main>
+  </main>
 
 
-);
+  );
 }
